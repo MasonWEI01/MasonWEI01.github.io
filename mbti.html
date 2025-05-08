@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Special Birthday Card for Lisa</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Montserrat:wght@400;600&display=swap');
+        
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #ffeef8 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+            perspective: 1000px;
+        }
+        
+        .scene {
+            position: relative;
+            width: 400px;
+            height: 500px;
+            margin: 40px auto;
+            perspective: 1000px;
+        }
+        
+        .envelope {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transform-style: preserve-3d;
+            transition: transform 1s;
+            cursor: pointer;
+        }
+        
+        .envelope.open {
+            transform: rotateX(180deg);
+        }
+        
+        .envelope__front, .envelope__back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+        
+        .envelope__front {
+            background: linear-gradient(45deg, #ff6b6b, #ff8e8e);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transform-style: preserve-3d;
+        }
+        
+        .envelope__front:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            width: 0;
+            height: 0;
+            border-left: 200px solid transparent;
+            border-right: 200px solid transparent;
+            border-top: 120px solid #ff5252;
+            transform-origin: top;
+            transition: all 0.8s ease;
+            transform: rotateX(0deg);
+            z-index: 3;
+        }
+        
+        .envelope.open .envelope__front:before {
+            transform: rotateX(180deg);
+            opacity: 0;
+        }
+        
+        .envelope__back {
+            background: white;
+            transform: rotateX(180deg);
+            padding: 30px;
+            box-sizing: border-box;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        
+        .card {
+            width: 100%;
+            height: 100%;
+            background: white;
+            border-radius: 8px;
+            padding: 30px;
+            box-sizing: border-box;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .message {
+            text-align: center;
+            position: relative;
+            z-index: 2;
+        }
+        
+        h1 {
+            font-family: 'Dancing Script', cursive;
+            color: #ff6b6b;
+            font-size: 32px;
+            margin-bottom: 20px;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        p {
+            margin: 10px 0;
+            line-height: 1.6;
+            color: #555;
+            font-size: 16px;
+        }
+        
+        .signature {
+            margin-top: 25px;
+            font-style: italic;
+            font-weight: bold;
+            color: #ff6b6b;
+            font-size: 18px;
+        }
+        
+        .open-btn, .close-btn {
+            margin-top: 30px;
+            background: linear-gradient(45deg, #ff6b6b, #ff8e8e);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 16px;
+            box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);
+            transition: all 0.3s;
+            z-index: 10;
+            position: relative;
+        }
+        
+        .open-btn:hover, .close-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(255, 107, 107, 0.6);
+        }
+        
+        .close-btn {
+            display: none;
+            background: linear-gradient(45deg, #6b8cff, #8ea1ff);
+            box-shadow: 0 5px 15px rgba(107, 140, 255, 0.4);
+        }
+        
+        .close-btn:hover {
+            box-shadow: 0 8px 20px rgba(107, 140, 255, 0.6);
+        }
+        
+        /* Decorative elements */
+        .hearts {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            z-index: 1;
+        }
+        
+        .heart {
+            position: absolute;
+            opacity: 0;
+            font-size: 20px;
+            color: #ff6b6b;
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0% {
+                transform: translateY(0) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-300px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+        
+        .particles {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            z-index: 0;
+        }
+        
+        .audio-control {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            cursor: pointer;
+            z-index: 100;
+        }
+        
+        .audio-control i {
+            color: #ff6b6b;
+            font-size: 20px;
+        }
+        
+        /* Music note animation */
+        .music-note {
+            position: absolute;
+            font-size: 24px;
+            color: #ff6b6b;
+            animation: floatNote 3s linear infinite;
+            opacity: 0;
+        }
+        
+        @keyframes floatNote {
+            0% {
+                transform: translateY(0) scale(0.5);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-150px) scale(1.5);
+                opacity: 0;
+            }
+        }
+        
+        /* Responsive design */
+        @media (max-width: 500px) {
+            .scene {
+                width: 320px;
+                height: 450px;
+            }
+            
+            .card {
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 28px;
+            }
+            
+            p {
+                font-size: 14px;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="scene">
+        <div class="envelope" id="envelope">
+            <div class="envelope__front">
+                <div class="hearts" id="hearts"></div>
+                <h1>Happy Birthday Lisa!</h1>
+            </div>
+            <div class="envelope__back">
+                <div class="card">
+                    <div class="particles" id="particles"></div>
+                    <div class="message" id="message">
+                        <h1>Dear Lisa,</h1>
+                        <p>Happy birthday !!!</p>
+                        <p>On your special day, I wish you all the happiness, love, and success in the world.</p>
+                        <p>May this new year of your life be filled with beautiful surprises, unforgettable experiences, and endless laughter.</p>
+                        <p>Here's to many more years of friendship, shared secrets, and creating amazing memories together!</p>
+                        <p>Have an absolutely wonderful birthday, Lisa!</p>
+                        <p class="signature">Your friend: Mason</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <button class="open-btn" id="openBtn">Open the Card</button>
+    <button class="close-btn" id="closeBtn">Close Card</button>
+    
+    <div class="audio-control" id="audioControl">
+        <i class="fas fa-music"></i>
+    </div>
+    
+    <!-- 更换为生日快乐音乐 -->
+    <audio id="bgMusic" loop>
+        <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-9.mp3" type="audio/mpeg">
+        <!-- 备用音乐源 -->
+        <source src="https://assets.mixkit.co/music/preview/mixkit-happy-birthday-to-you-528.mp3" type="audio/mpeg">
+    </audio>
+
+    <script>
+        // DOM Elements
+        const envelope = document.getElementById('envelope');
+        const openBtn = document.getElementById('openBtn');
+        const closeBtn = document.getElementById('closeBtn');
+        const heartsContainer = document.getElementById('hearts');
+        const particlesContainer = document.getElementById('particles');
+        const audioControl = document.getElementById('audioControl');
+        const bgMusic = document.getElementById('bgMusic');
+        let isMusicPlaying = false;
+        
+        // Create floating hearts
+        function createHearts() {
+            const heartEmojis = ['❤️', '🧡', '💛', '💚', '💙', '💜', '🤎', '🖤', '🤍'];
+            
+            for (let i = 0; i < 15; i++) {
+                const heart = document.createElement('div');
+                heart.className = 'heart';
+                heart.innerHTML = heartEmojis[Math.floor(Math.random() * heartEmojis.length)];
+                heart.style.left = Math.random() * 100 + '%';
+                heart.style.top = Math.random() * 100 + '%';
+                heart.style.fontSize = (Math.random() * 20 + 15) + 'px';
+                heart.style.animationDelay = Math.random() * 5 + 's';
+                heart.style.animationDuration = (Math.random() * 3 + 4) + 's';
+                heartsContainer.appendChild(heart);
+            }
+        }
+        
+        // Create music notes animation
+        function createMusicNotes() {
+            const notes = ['♪', '♫', '♩', '♬', '♭', '♮'];
+            const colors = ['#ff6b6b', '#ff8e8e', '#ff5252', '#ff4081', '#e91e63'];
+            
+            for (let i = 0; i < 8; i++) {
+                const note = document.createElement('div');
+                note.className = 'music-note';
+                note.textContent = notes[Math.floor(Math.random() * notes.length)];
+                note.style.color = colors[Math.floor(Math.random() * colors.length)];
+                note.style.left = Math.random() * 100 + '%';
+                note.style.top = '100%';
+                note.style.fontSize = (Math.random() * 20 + 16) + 'px';
+                note.style.animationDelay = Math.random() * 2 + 's';
+                note.style.animationDuration = (Math.random() * 2 + 2) + 's';
+                document.body.appendChild(note);
+            }
+        }
+        
+        // Create particles
+        function createParticles() {
+            particlesContainer.innerHTML = '';
+            const colors = ['#ff6b6b', '#ffa3a3', '#ffd3d3', '#a8d8ea', '#aa96da', '#fcbad3', '#ffde7d'];
+            
+            for (let i = 0; i < 150; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                particle.style.width = Math.random() * 8 + 3 + 'px';
+                particle.style.height = particle.style.width;
+                
+                if (Math.random() > 0.5) {
+                    particle.style.borderRadius = '50%';
+                } else {
+                    particle.style.borderRadius = '10%';
+                }
+                
+                particle.style.position = 'absolute';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                particle.style.opacity = '0';
+                
+                const animationDuration = Math.random() * 3 + 2;
+                particle.style.animation = `explode ${animationDuration}s ease-out forwards`;
+                particle.style.animationDelay = Math.random() * 0.5 + 's';
+                
+                particlesContainer.appendChild(particle);
+            }
+            
+            // Add animation style
+            if (!document.getElementById('particles-animation')) {
+                const style = document.createElement('style');
+                style.id = 'particles-animation';
+                style.innerHTML = `
+                    @keyframes explode {
+                        0% {
+                            transform: translate(0, 0) scale(0);
+                            opacity: 0;
+                        }
+                        10% {
+                            opacity: 1;
+                        }
+                        100% {
+                            transform: translate(${Math.random() * 200 - 100}px, ${Math.random() * 200 - 100}px) scale(1);
+                            opacity: 0;
+                        }
+                    }
+                `;
+                document.head.appendChild(style);
+            }
+        }
+        
+        // Event Listeners
+        openBtn.addEventListener('click', function() {
+            envelope.classList.add('open');
+            openBtn.style.display = 'none';
+            closeBtn.style.display = 'block';
+            createParticles();
+            createMusicNotes();
+            
+            // Play music if not already playing
+            if (!isMusicPlaying) {
+                bgMusic.volume = 0.5;
+                bgMusic.play().then(() => {
+                    isMusicPlaying = true;
+                    audioControl.innerHTML = '<i class="fas fa-pause"></i>';
+                }).catch(e => {
+                    console.log("Autoplay prevented:", e);
+                    // Show message to user to interact
+                    alert("Please click the music button to play the birthday song!");
+                });
+            }
+        });
+        
+        closeBtn.addEventListener('click', function() {
+            envelope.classList.remove('open');
+            closeBtn.style.display = 'none';
+            openBtn.style.display = 'block';
+        });
+        
+        audioControl.addEventListener('click', function() {
+            if (isMusicPlaying) {
+                bgMusic.pause();
+                audioControl.innerHTML = '<i class="fas fa-music"></i>';
+            } else {
+                bgMusic.play().then(() => {
+                    audioControl.innerHTML = '<i class="fas fa-pause"></i>';
+                });
+            }
+            isMusicPlaying = !isMusicPlaying;
+        });
+        
+        // Initialize
+        createHearts();
+        
+        // Allow audio to play on user interaction
+        document.body.addEventListener('click', function initAudio() {
+            // Try to play audio (required by some browsers)
+            bgMusic.volume = 0;
+            bgMusic.play().then(() => {
+                bgMusic.pause();
+                bgMusic.currentTime = 0;
+                bgMusic.volume = 0.5;
+            }).catch(e => console.log("Audio init:", e));
+            
+            // Remove this listener after first interaction
+            document.body.removeEventListener('click', initAudio);
+        }, { once: true });
+    </script>
+</body>
+</html>
